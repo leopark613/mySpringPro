@@ -12,7 +12,7 @@ jdbc:mariadb://localhost:3306/test
 
 Spring Boot 3.2.0 -> jwt 때문에 2.6.6 으로 다운그레이드
 JDK 17
-gradle
+gradle 7.4.2
 application.yml
 MariaDB
 
