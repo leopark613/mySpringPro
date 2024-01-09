@@ -1,0 +1,79 @@
+DB) 마리아DB
+호스트 : localhost
+포트 : 3306
+사용자 : root
+비번 : 1234
+스키마 : test
+jdbc:mariadb://localhost:3306/test
+
+
+
+
+
+Spring Boot 3.2.0 -> jwt 때문에 2.6.6 으로 다운그레이드
+JDK 17
+gradle
+application.yml
+MariaDB
+
+
+----------------------------------------------------------------------------------
+
+
+application.properties)
+
+# MariaDB DataSource
+spring.datasource.hikari.jdbc-url=jdbc:mariadb://localhost:3306/test
+spring.datasource.hikari.username=root
+spring.datasource.hikari.password=1234
+spring.datasource.hikari.driver-class-name=org.mariadb.jdbc.Driver
+
+# JPA/Hibernate ??
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
+
+
+
+--------------------------------------------------------------------------------------
+
+DB 테이블 구조
+
+create table board
+(
+    id          varchar(255)                           not null
+        primary key,
+    title       varchar(255)                           not null,
+    content     mediumtext                             not null,
+    auth        varchar(100)                           null,
+    count       int                                    null,
+    create_date timestamp  default current_timestamp() null,
+    update_date timestamp  default current_timestamp() null,
+    use_yn      varchar(1) default 'Y'                 not null
+);
+
+
+create table test.user
+(
+    id          varchar(255)                          not null
+        primary key,
+    password    varchar(255)                          not null,
+    name        varchar(100)                          null,
+    email       varchar(100)                          null,
+    auth        varchar(50)                           not null,
+    phone       varchar(20)                           null,
+    address     varchar(100)                          null,
+    create_date timestamp default current_timestamp() null,
+    update_date timestamp default current_timestamp() null
+);
+
+
+>> 현재 board에서 pk 제거함
+
+
+
+
+
+
+
+
