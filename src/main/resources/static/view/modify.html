@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 상세 수정</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/modify.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGo=">
+</head>
+<body>
+<div class="container mt-4">
+  <h1 class="text-center mb-4">게시글 상세 수정</h1>
+  <form id="updateForm" action="/board/update" method="post">
+    <div class="form-group">
+      <label class="label-group">작성자</label>
+      <p id="id" class="form-control-plaintext"></p>
+    </div>
+    <div class="form-group">
+      <label class="label-group">작성일</label>
+      <p id="createDate" class="form-control-plaintext"></p>
+    </div>
+    <div class="form-group">
+      <label class="label-group">조회수</label>
+      <p id="count" class="form-control-plaintext"></p>
+    </div>
+    <div class="form-group">
+      <label for="title" class="label-group">제목</label>
+      <input type="text" class="form-control" name="title" id="title" required>
+    </div>
+    <div class="form-group">
+      <label for="content" class="label-group">내용</label>
+      <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+    </div>
+    <input type="hidden" name="id" value="">
+
+    <div class="text-center">
+      <button type="button" id="returnList" class="btn btn-secondary mr-2" onclick="backList()">목록으로</button>
+      <button type="submit" id="saveButton" class="btn btn-primary">저장</button>
+      <button type="button" id="cancelButton" class="btn btn-danger" onclick="cancelEdit()">취소</button>
+    </div>
+  </form>
+</div>
+<script src="/js/modify.js"></script>
+</body>
+</html>

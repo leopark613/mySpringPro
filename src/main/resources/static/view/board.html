@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>게시판</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/board.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGo="><!--favicon.ico를 요청하지않게 방지(불필요한 404오류)-->
+</head>
+<body>
+<div class="container mt-4">
+  <h1 class="text-center mb-4">게시판</h1>
+  <br>
+  <div class="d-flex justify-content-between mb-3">
+    <div>
+      <select id="searchType" class="mr-2">
+        <option value="title">제목</option>
+        <option value="content">내용</option>
+        <option value="id">작성자</option>
+      </select>
+      <input type="text" id="searchInput" class="mr-2" placeholder="검색...">
+<!--      <button id="searchButton" class="btn btn-primary">🔍 검색</button>-->
+      <button id="searchButton" class="btn btn-outline-info float-right">🔍 검색</button>
+    </div>
+    <div>
+      <button id="logoutButton" class="btn btn-outline-info float-right mr-2" style="margin-top: -48px;">로그아웃</button>
+    <form action="/view/insert.html" method="get" class="ml-2">
+<!--      <button type="submit" id="createPost" class="btn btn-success">글쓰기</button>-->
+      <button type="submit" id="createPost" class="btn btn-outline-info float-right">글쓰기</button>
+    </form>
+    </div>
+  </div>
+
+  <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th>제목</th>
+      <th>내용</th>
+      <th>작성자</th>
+      <th>조회수</th>
+      <th>작성일</th>
+      <th>수정일</th>
+    </tr>
+    </thead>
+    <tbody id="boardContent">
+    <!-- 게시글 목록은 여기에 동적으로 뿌림 -->
+    </tbody>
+  </table>
+
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center" id="pagination">
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Previous" id="prev-page">&laquo;</a>
+      </li>
+      <!-- 페이지네이션 버튼들이 여기에 들어갑니다. -->
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Next" id="next-page">&raquo;</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<template id="boardRowTemplate">
+  <tr>
+    <td class="title-cell"></td><!--제목-->
+    <td>
+      <form class="content-form" action="/view/detail.html" method="get"><!-- 내용 -->
+        <input type="hidden" name="id" value="">
+        <button type="submit" class="content-button btn btn-link"></button>
+      </form>
+    </td>
+    <td class="id-cell"></td><!-- 작성자 -->
+    <td class="count-cell"></td><!-- 조회수 -->
+    <td class="create-date-cell"></td><!-- 작성일 -->
+    <td class="update-date-cell"></td><!-- 수정일 -->
+  </tr>
+</template>
+
+<script src="/js/board.js"></script>
+</body>
+</html>

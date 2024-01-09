@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mariadb://localhost:3306/test?useUnicode=true&characterEncoding=utf8mb4
+      username: root
+      password: 1234
+      driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+#jwt:
+#  secret: QjW3DxN5cVbU8eK2rT1mZ7sP4fH9aQ3y
+

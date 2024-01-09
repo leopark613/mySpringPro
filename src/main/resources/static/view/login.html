@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/login.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGo="><!--favicon.ico를 요청하지않게 방지(불필요한 404오류)-->
+</head>
+<body>
+<div id="container" class="container">
+  <div class="login-box">
+    <h2 class ="summary">로그인</h2>
+    <form id="loginForm" method="post">
+      <div class="form-group">
+        <label for="uid">아이디</label>
+        <input type="text" name="uid" id="uid" class="form-control" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label for="upw">비밀번호</label>
+      <!--<input type="password" name="upw" id="upw" class="form-control" required>-->
+        <input type="password" name="upw" id="upw" class="form-control" autocomplete="current-password" required>
+      </div>
+      <input type="hidden" name="redirect" value="/view/board.html">
+      <div class="form-group login-btn-group">
+        <input type="submit" value="로그인" class="btn btn-primary">
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#joinModal" style="width: 50%; margin-top: 3px; margin-left: 140px;">회원가입</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- 로그인 실패시 팝업 모달 -->
+<div class="modal fade" id="loginErrorModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">로그인 오류</h5>
+        <button type="button" class="close" aria-label="Close" onclick="closeLoginModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!--동적으로 서버에서 반환된 로그인 오류 메세지 표현-->
+        <p id="loginErrorMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 회원가입 모달 -->
+<div class="modal fade" id="joinModal" tabindex="-1" aria-labelledby="joinModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="joinModalLabel">회원가입</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="joinForm">
+          <!-- 아이디 입력 -->
+          <div class="form-group">
+            <label for="joinId" class="form-label" style="font-size: 1.2em;">아이디</label>
+            <button type="button" class="btn btn-outline-secondary btn-sm custom-btn-size" id="checkDuplicateIdButton">중복 확인</button>
+            <span id="idError" style="color: red; display: none;">아이디는 영문 대소문자와 숫자 4~12자리로 입력해야합니다.</span>
+            <div class="input-group">
+              <input type="text" class="form-control" id="joinId" placeholder="아이디는 영문 대소문자와 숫자 4~12자리로 입력해야합니다.">
+            </div>
+          </div>
+          <!-- 이름 입력 -->
+          <div class="form-group">
+            <label for="joinName" class="form-label" style="font-size: 1.2em;">이름</label>
+            <span id="nameError" style="color: red; display: none;">이름 형식에 맞지 않습니다.</span>
+            <div class="input-group">
+              <input type="text" class="form-control" id="joinName">
+            </div>
+          </div>
+          <!-- 비밀번호 입력 -->
+          <div class="form-group">
+            <label for="joinPassword" class="form-label" style="font-size: 1.2em;">비밀번호</label>
+            <span id="passwordError" style="color: red; display: none;">비밀번호는 최소 8자 이상이며, 숫자와 알파벳을 포함해야 합니다.</span>
+            <input type="password" class="form-control" id="joinPassword" required>
+          </div>
+          <!-- 이메일 입력 -->
+          <div class="form-group">
+            <label for="joinEmail" class="form-label" style="font-size: 1.2em;">이메일</label>
+            <button type="button" class="btn btn-outline-secondary btn-sm custom-btn-size" id="checkDuplicateEmailButton">중복 확인</button>
+            <span id="emailError" style="color: red; display: none;">이메일 형식에 맞지 않습니다.</span>
+            <div class="input-group">
+              <input type="email" class="form-control" id="joinEmail">
+            </div>
+          </div>
+          <!-- 전화번호 입력 -->
+          <div class="form-group">
+            <label for="joinPhone" class="form-label" style="font-size: 1.2em;">전화번호</label>
+            <input type="tel" class="form-control" id="joinPhone">
+          </div>
+          <!-- 주소 입력 -->
+          <div class="form-group">
+            <label for="joinAddress" class="form-label" style="font-size: 1.2em;">주소</label>
+            <button type="button" class="btn btn-outline-secondary btn-sm custom-btn-size" id="addressSearch">주소 찾기</button>
+            <span id="addressError" style="color: red; display: none;">올바른 주소 형식을 입력해주세요.</span>
+            <div class="input-group">
+              <input type="text" class="form-control" id="joinAddress"placeholder="도로명, 지번">
+            </div>
+          </div>
+        </form>
+        <!-- 상세 주소 입력란 추가 -->
+        <div class="form-group">
+          <label for="joinDetailAddress" class="form-label" style="font-size: 1.2em;">상세주소</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="joinDetailAddress" placeholder="상세주소를 입력해주세요.">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeJoinButton">닫기</button>
+        <button type="button" class="btn btn-primary" onclick="submitJoinForm()">가입하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--회원가입 중복확인 팝업 모달-->
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="alertModalLabel">알림</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- 메시지 표시 위치 -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeJoinButton2" style="
+        margin-right: 215px;">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/login.js"></script>
+<!--부트스트랩 사용 플러그인-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--카카오 주소 API 플러그인-->
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+</body>
+</html>

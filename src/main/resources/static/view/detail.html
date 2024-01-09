@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 상세</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/detail.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGo=">
+</head>
+<body>
+<div class="container mt-4">
+  <h1 class="text-center mb-4">게시글 상세</h1>
+
+  <table class="table">
+    <tbody>
+    <tr>
+      <th scope="row">작성자</th>
+      <td id="id"></td>
+    </tr>
+    <tr>
+      <th scope="row">작성일</th>
+      <td id="createDate"></td>
+    </tr>
+    <tr>
+      <th scope="row">조회수</th>
+      <td id="count"></td>
+    </tr>
+    <tr>
+      <th scope="row">제목</th>
+      <td id="title"></td>
+    </tr>
+    <tr>
+      <th scope="row">내용</th>
+      <td id="content"></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="text-center mt-4">
+    <button onclick="location.href='/view/board.html'" class="btn btn-secondary">목록으로</button>
+    <form class="d-inline" action="/view/modify.html" method="get">
+      <input type="hidden" name="id" value="">
+      <button type="submit" id="editPost" class="btn btn-primary">수정하기</button>
+    </form>
+    <form id="deleteForm" action="/board/deactivate/${postId}" method="post" class="d-inline">
+      <input type="hidden" name="id" value="${postId}">
+      <button type="submit" id="deleteButton" class="btn btn-danger">삭제</button>
+    </form>
+  </div>
+</div>
+<script src="/js/detail.js"></script>
+</body>
+</html>

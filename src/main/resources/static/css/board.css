@@ -1,0 +1,118 @@
+body {
+    text-align: center;
+}
+
+.board-table {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    border-collapse: collapse;
+}
+
+.board-table th, .board-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.board-table th {
+    background-color: #f2f2f2;
+}
+
+.board-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.board-table button {
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.board-table button:hover {
+    text-decoration: none;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #e9e9e9;
+    font-weight: bold;
+}
+
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 3px;
+}
+
+#searchButton {
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#createPost {
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (max-width: 768px) {
+    .board-table, .search-container {
+        width: 100%; /* 화면이 좁을 때 너비를 100%로 확장 */
+    }
+
+    .pagination {
+        overflow-x: auto; /* 페이지네이션에 가로 스크롤 허용 */
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination button {
+        min-width: 30px; /* 버튼 최소 너비 설정 */
+        margin: 0 2px; /* 버튼 간격 조절 */
+        padding: 5px;
+    }
+
+    #searchButton, #createPost {
+        width: 100%; /* 버튼 너비 확장 */
+    }
+}
+
+@media (max-width: 480px) {
+    /* 소형 화면에 대한 추가적인 스타일 조정 */
+    .board-table, .search-container {
+        width: 100%;
+    }
+
+    .pagination {
+        overflow-x: auto;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination button {
+        padding: 3px;
+        min-width: 20px; /* 더 작은 화면에서 버튼 크기 조정 */
+    }
+}

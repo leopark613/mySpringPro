@@ -1,0 +1,91 @@
+body {
+    /*background-image: url('./loginbg.png');*/
+    background-image: url('https://images.unsplash.com/photo-1581090700227-1e37b190418e?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80');
+    background-size: 100%;
+    font-size: 0.75rem;
+}
+#loginBoxTitle {
+    color:#000000;
+    font-weight: bold;
+    font-size: 1.9rem;
+    text-transform: uppercase;
+    padding: 5px;
+    margin-bottom: 20px;
+    background: linear-gradient(to right, #270a09, #8ca6ce);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+input[type="button"] {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+}
+.login-box {
+    margin:50px auto;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 10px;
+    padding:40px 30px;
+    border:5px solid #0e0e0e;width:350px;
+    filter: drop-shadow(0px 0px 10px rgba(0,0,0,.5));
+}
+
+.form-group label {
+    font-size: 0.75rem;
+    margin:5px 0;
+}
+#login-btn-box{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top:10px;
+}
+
+
+.form-group {
+    margin-bottom: 15px; /* 로그인 버튼과의 간격 추가 */
+}
+
+/* 로그인 버튼을 가운데 정렬하기 위한 스타일 */
+.login-btn-group {
+    text-align: center;
+}
+
+/* 로그인 버튼 스타일 조정 */
+.login-btn-group input[type="submit"] {
+    width: 100%; /* 버튼의 너비를 부모 요소의 너비와 동일하게 조정 */
+    box-sizing: border-box; /* 패딩과 테두리를 너비 계산에 포함 */
+}
+
+.summary {
+    text-align: center;
+}
+
+.custom-btn-size {
+    /*padding: 0.25rem 0.5rem; !* 버튼 패딩 조절 *!*/
+    font-size: 0.75rem; /* 버튼 글씨 크기 조절 */
+    border-top-width: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    border-right-width: 1px;
+    padding-right: 4px;
+    border-bottom-width: 1px;
+}
+
+
+/* 회원가입 중복확인 팝업 모달 스타일 */
+#alertModal .modal-content {
+    background-color: #555555; /* 어두운 그레이 */
+    /* 또는 background-color: #555555; 중간 그레이 */
+}
+
+#alertModal .modal-body {
+    color: white; /* 텍스트 색상 하얀색 */
+    font-weight: bold; /* 폰트 두껍게 */
+}
+
+
+#alertModal .modal-title {
+    color: white; /* 텍스트 색상 하얀색 */
+    font-weight: bold; /* 폰트 두껍게 */
+}
