@@ -34,6 +34,7 @@
   <table class="table table-striped table-hover">
     <thead>
     <tr>
+      <th>글번호</th>
       <th>제목</th>
       <th>내용</th>
       <th>작성자</th>
@@ -62,10 +63,12 @@
 
 <template id="boardRowTemplate">
   <tr>
+    <td class="seq-cell"></td><!--글번호-->
     <td class="title-cell"></td><!--제목-->
     <td>
-      <form class="content-form" action="/view/detail.html" method="get"><!-- 내용 -->
+      <form class="content-form" action="/view/detail.html" method="get">
         <input type="hidden" name="id" value="">
+        <input type="hidden" name="seq" value="">
         <button type="submit" class="content-button btn btn-link"></button>
       </form>
     </td>

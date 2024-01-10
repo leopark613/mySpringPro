@@ -7,9 +7,7 @@ import org.springframework.data.annotation.Id;
 //import javax.persistence.Id;
 //import javax.persistence.GeneratedValue;
 //import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -19,7 +17,10 @@ public class Board {
 
     //@jakarta.persistence.Id
     @javax.persistence.Id
-    @Id
+    @Id //PK를 의미
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //주 키의 값을 데이터베이스가 자동으로 생성하도록 설정
+    private int seq;
+
     @Column(length = 255, nullable = false)
     private String id;
 
@@ -79,6 +80,8 @@ public class Board {
         return useYn;
     }
 
+    public int getSeq() { return seq;}
+
     //*********************************************************************************************
 
     // Setters
@@ -106,13 +109,14 @@ public class Board {
         this.createDate = createDate;
     }
 
-    public void setUpdateDate(Timestamp updateDate) {
-        this.updateDate = updateDate;
-    }
+    public void setUpdateDate(Timestamp updateDate) { this.updateDate = updateDate; }
 
     // useYn 필드의 setter
     public void setUseYn(String useYn) {
         this.useYn = useYn;
     }
+
+
+    public void setSeq(int seq) { this.seq = seq; }
 
 }

@@ -43,13 +43,13 @@ document.addEventListener("DOMContentLoaded", function() {
       url += `?type=${searchType}&term=${encodeURIComponent(searchTerm)}`;
     }
     //*******서버로 가기 전, 로그인 없이 URL로만 진입을 하려고 하는 경우 검증***********
-        const jwtToken = localStorage.getItem('jwtToken');
-        //로그인없이(토큰없이) 입장 하려 할 경우
-        if (!jwtToken) {
-          console.error('JWT 토큰이 없습니다.');
-          alert("로그인을 해주세요");
-          return window.location.href = `/view/login.html`;
-        }
+    const jwtToken = localStorage.getItem('jwtToken');
+    //로그인없이(토큰없이) 입장 하려 할 경우
+    if (!jwtToken) {
+      console.error('JWT 토큰이 없습니다.');
+      alert("로그인을 해주세요");
+      return window.location.href = `/view/login.html`;
+    }
     fetch(url)
     .then(response => {
       if (!response.ok) {
@@ -85,11 +85,10 @@ document.addEventListener("DOMContentLoaded", function() {
       const boards = activeBoards.slice(startIndex, endIndex);
 
       boards.forEach(board => {
-        const template = document.getElementById('boardRowTemplate').content.cloneNode(true);
 
+        const template = document.getElementById('boardRowTemplate').content.cloneNode(true);
+        template.querySelector('.seq-cell').textContent = board.seq;
         template.querySelector('.title-cell').textContent = board.title;
-        template.querySelector('.content-form').action = `/view/detail.html?id=${board.id}`;
-        template.querySelector('input[type="hidden"]').value = board.id;
         template.querySelector('.content-button').textContent = board.content;
         template.querySelector('.id-cell').textContent = board.id;
         template.querySelector('.count-cell').textContent = board.count;
@@ -109,6 +108,13 @@ document.addEventListener("DOMContentLoaded", function() {
           minute: '2-digit',
           hour12: true
         });
+
+        // hidden input 값 설정
+        template.querySelector('.content-form input[name="id"]').value = board.id;
+        template.querySelector('.content-form input[name="seq"]').value = board.seq;
+        //detail.html(상세페이지)로 넘어가기 위한 쿼리스트링
+        template.querySelector('.content-form').action = `/view/detail.html?id=${board.id}&seq=${board.seq}`;
+
 
         boardContent.appendChild(document.importNode(template, true));
       });

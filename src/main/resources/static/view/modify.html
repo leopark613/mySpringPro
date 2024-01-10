@@ -12,7 +12,13 @@
   <h1 class="text-center mb-4">게시글 상세 수정</h1>
   <form id="updateForm" action="/board/update" method="post">
     <div class="form-group">
+      <label class="label-group">글번호</label>
+      <input type="hidden" name="seq" value="">
+      <p id="seq" class="form-control-plaintext"></p>
+    </div>
+    <div class="form-group">
       <label class="label-group">작성자</label>
+      <input type="hidden" name="id" value="">
       <p id="id" class="form-control-plaintext"></p>
     </div>
     <div class="form-group">
@@ -31,7 +37,6 @@
       <label for="content" class="label-group">내용</label>
       <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
     </div>
-    <input type="hidden" name="id" value="">
 
     <div class="text-center">
       <button type="button" id="returnList" class="btn btn-secondary mr-2" onclick="backList()">목록으로</button>

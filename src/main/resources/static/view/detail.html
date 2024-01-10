@@ -14,6 +14,10 @@
   <table class="table">
     <tbody>
     <tr>
+      <th scope="row">글번호</th>
+      <td id="seq"></td>
+    </tr>
+    <tr>
       <th scope="row">작성자</th>
       <td id="id"></td>
     </tr>
@@ -40,10 +44,12 @@
     <button onclick="location.href='/view/board.html'" class="btn btn-secondary">목록으로</button>
     <form class="d-inline" action="/view/modify.html" method="get">
       <input type="hidden" name="id" value="">
+      <input type="hidden" name="seq" value="">
       <button type="submit" id="editPost" class="btn btn-primary">수정하기</button>
     </form>
-    <form id="deleteForm" action="/board/deactivate/${postId}" method="post" class="d-inline">
-      <input type="hidden" name="id" value="${postId}">
+<!--    <form id="deleteForm" action="/board/deactivate/${postSeq}" method="post" class="d-inline">-->
+    <form id="deleteForm" method="post" class="d-inline">
+      <input type="hidden" name="seq" value="${postSeq}">
       <button type="submit" id="deleteButton" class="btn btn-danger">삭제</button>
     </form>
   </div>

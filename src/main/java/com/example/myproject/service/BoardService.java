@@ -38,9 +38,14 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
-    // 게시글 ID로 조회
-    public Optional<Board> findBoardById(String id) {
-        return boardRepository.findById(id);
+    // 게시글 ID로 조회 - 이제 사용안함
+    //public Optional<Board> findBoardById(String id) {
+        //return boardRepository.findById(id);
+    //}
+
+    // 게시글 seq로 조회
+    public Optional<Board> findBoardBySeq(int seq) {
+        return boardRepository.findBySeq(seq);
     }
 
     // 조회수 증가 저장 메서드
@@ -56,8 +61,8 @@ public class BoardService {
         //return boardRepository.updateBoard(board);
     }
 
-    public void deactivateBoard(String id) {
-        Board board = boardRepository.findById(id)
+    public void deactivateBoard(int seq) {
+        Board board = boardRepository.findBySeq(seq)
                 .orElseThrow(() -> new EntityNotFoundException("Board not found"));
         board.setUseYn("N");
         boardRepository.save(board);

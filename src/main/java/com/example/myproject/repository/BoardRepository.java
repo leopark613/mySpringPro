@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, String> {
     // 필요한 메소드를 추가할 수 있습니다.
@@ -18,5 +19,8 @@ public interface BoardRepository extends JpaRepository<Board, String> {
 
     //@Query("SELECT b FROM Board b ORDER BY b.createDate DESC")
     //List<Board> findAllOrderByCreateDateDesc();
+
+    // seq 값으로 Board 엔티티를 찾는 메소드
+    Optional<Board> findBySeq(int seq);
 }
 
