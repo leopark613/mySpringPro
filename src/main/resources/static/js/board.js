@@ -88,8 +88,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const template = document.getElementById('boardRowTemplate').content.cloneNode(true);
         template.querySelector('.seq-cell').textContent = board.seq;
-        template.querySelector('.title-cell').textContent = board.title;
-        template.querySelector('.content-button').textContent = board.content;
+        //template.querySelector('.title-cell').textContent = board.title;
+        template.querySelector('.title-button').textContent = board.title;
         template.querySelector('.id-cell').textContent = board.id;
         template.querySelector('.count-cell').textContent = board.count;
         template.querySelector('.create-date-cell').textContent = new Date(board.createDate).toLocaleString('ko-KR', {
@@ -110,10 +110,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         // hidden input 값 설정
-        template.querySelector('.content-form input[name="id"]').value = board.id;
-        template.querySelector('.content-form input[name="seq"]').value = board.seq;
+        template.querySelector('.title-cell input[name="id"]').value = board.id;
+        template.querySelector('.title-cell input[name="seq"]').value = board.seq;
         //detail.html(상세페이지)로 넘어가기 위한 쿼리스트링
-        template.querySelector('.content-form').action = `/view/detail.html?id=${board.id}&seq=${board.seq}`;
+        template.querySelector('.title-cell').action = `/view/detail.html?id=${board.id}&seq=${board.seq}`;
 
 
         boardContent.appendChild(document.importNode(template, true));
