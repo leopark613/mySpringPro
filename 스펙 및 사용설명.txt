@@ -41,8 +41,9 @@ DB 테이블 구조
 
 create table board
 (
-    id          varchar(255)                           not null
+    seq         int auto_increment
         primary key,
+    id          varchar(255)                           not null,
     title       varchar(255)                           not null,
     content     mediumtext                             not null,
     auth        varchar(100)                           null,
@@ -53,7 +54,10 @@ create table board
 );
 
 
-create table test.user
+
+
+
+create table user
 (
     id          varchar(255)                          not null
         primary key,
@@ -68,7 +72,10 @@ create table test.user
 );
 
 
->> 현재 board에서 pk 제거함
+
+
+
+
 
 
 
