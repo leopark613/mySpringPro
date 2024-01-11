@@ -50,8 +50,11 @@ create table board
     count       int                                    null,
     create_date timestamp  default current_timestamp() null,
     update_date timestamp  default current_timestamp() null,
-    use_yn      varchar(1) default 'Y'                 not null
+    use_yn      varchar(1) default 'Y'                 not null,
+    image_path  varchar(255)                           null
 );
+
+
 
 
 
