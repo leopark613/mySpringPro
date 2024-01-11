@@ -63,11 +63,26 @@ document.addEventListener("DOMContentLoaded", function() {
       return response.json();
     })
     .then(activeBoards => {
+
+      //************************************************************
+      // 로그인한사용자 권한 확인
+      const userAuth = getUserAuthFromJwtToken();
+      // 사용자 권한에 따른 게시글 필터링
+      let boardsToDisplay;
+      if (userAuth === '1') {
+        // 관리자는 모든 게시글 보임
+        boardsToDisplay = activeBoards;
+      } else {
+        // 일반 사용자는 권한이 '0'인 게시글만 보임
+        boardsToDisplay = activeBoards.filter(board => board.auth === '0');
+      }
+      //************************************************************
+
       const boardContent = document.getElementById('boardContent');
       boardContent.innerHTML = '';
 
       //검색한 키워드에 대한 결과값이 없을 경우
-      if (activeBoards.length === 0) {
+      if (boardsToDisplay.length === 0) {
         const noDataMessage = document.createElement('div');
         noDataMessage.textContent = '조회할 데이터가 없습니다';
         noDataMessage.style.textAlign = 'center';
@@ -78,14 +93,14 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
 
-      totalPages = Math.ceil(activeBoards.length / ITEMS_PER_PAGE);
+      totalPages = Math.ceil(boardsToDisplay.length / ITEMS_PER_PAGE);
 
       const startIndex = (page - 1) * ITEMS_PER_PAGE;
-      const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, activeBoards.length);
+      const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, boardsToDisplay.length);
       const boards = activeBoards.slice(startIndex, endIndex);
 
-      boards.forEach(board => {
-
+      //boards.forEach(board => {
+      boardsToDisplay.slice(startIndex, endIndex).forEach(board => {
         const template = document.getElementById('boardRowTemplate').content.cloneNode(true);
         template.querySelector('.seq-cell').textContent = board.seq;
         //template.querySelector('.title-cell').textContent = board.title;
@@ -214,3 +229,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
   fetchAndDisplayPage(1); // 초기 페이지 로드
 });
+
+
+
+// JWT 토큰에서 사용자 권한 추출 함수 - auth 추출
+function getUserAuthFromJwtToken() {
+  const jwtToken = localStorage.getItem('jwtToken');
+  if (!jwtToken) {
+    return null;
+  }
+  const base64Url = jwtToken.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const payload = JSON.parse(window.atob(base64));
+  return payload.auth; // 'auth' 클레임 추출
+}

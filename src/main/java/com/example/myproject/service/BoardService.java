@@ -17,12 +17,17 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 
 @Service
 public class BoardService {
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     // 모든 게시글 조회
     public List<Board> findAllBoards() {
@@ -74,10 +79,14 @@ public class BoardService {
     }
 
     //게시글 추가(글쓰기)
-    public Board createBoard(Board board) {
+    public Board createBoard(Board board, String jwtToken) {
+        // JWT 토큰에서 사용자 권한 추출
+        String userAuth = authenticationService.getAuthFromToken(jwtToken); // 토큰에서 권한 추출
+
         board.setCreateDate(new Timestamp(System.currentTimeMillis()));
         board.setUpdateDate(new Timestamp(System.currentTimeMillis()));
-        board.setAuth(String.valueOf(0)); // auth를 0으로 초기화
+        board.setAuth(userAuth); // 추출한 사용자 권한 설정
+        //board.setAuth(String.valueOf(0)); // auth를 0으로 초기화
         board.setCount(0); // count를 0으로 초기화
         return boardRepository.save(board);
     }

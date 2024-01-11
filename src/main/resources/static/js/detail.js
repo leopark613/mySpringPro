@@ -45,12 +45,8 @@ document.addEventListener("DOMContentLoaded", function() {
        //[수정버튼] - id, seq를 가지고 쿼리스트링으로 수정화면으로 이동
        document.querySelector('.d-inline input[name="id"]').value = data.id;
        document.querySelector('.d-inline input[name="seq"]').value = data.seq;
-
        document.querySelector('.d-inline').action = `/view/modify.html?id=${data.id}&seq=${data.seq}`;
 
-
-
-       //이게 없어도될까? 이미 html에서 action 이 존재하기때문...
 
       //삭제로직 ************** 상태값 'Y' -> 'N' 으로 변경후 게시판 board.html로 이동 *******************************
        const deleteForm = document.getElementById('deleteForm');
@@ -59,26 +55,23 @@ document.addEventListener("DOMContentLoaded", function() {
          deleteForm.action = `/board/deactivate/${postSeq}`;
        }
 
-      // const deleteButton = document.getElementById('deleteButton');
-      // if (deleteButton && deleteForm) {
-      //   deleteButton.addEventListener('click', function() {
-      //     // fetch 요청 전에 폼의 action 속성이 올바르게 설정되었는지 확인합니다.
-      //     fetch(deleteForm.action, { method: 'POST' })
-      //     .then(response => {
-      //       if (response.ok) {
-      //         // 동적으로 폼을 생성하여 리디렉션 수행
-      //         let redirectForm = document.createElement('form');
-      //         document.body.appendChild(redirectForm);
-      //         redirectForm.method = 'get';
-      //         redirectForm.action = '/view/board.html';
-      //         redirectForm.submit();
-      //       } else {
-      //         console.error('Failed to deactivate the board');
-      //       }
-      //     })
-      //     .catch(error => console.error('Error:', error));
-      //   });
-      // }
+      // 로그인한 사용자의 id일 경우에만 [수정하기],[삭제] 버튼 보이게하기
+       const loggedInUserId = getUserIdFromJwtToken(); //JWT토큰에서 추출한 로그인한 id 추출한 함수
+       const postAuthorId = data.id;  //상세보기 화면에서 게시글의 작성자 id 추출
+
+       //수정하기버튼
+       const editButton = document.getElementById('editPost');
+       const delButton = document.getElementById('deleteButton');
+
+       //게시글 작성자와 접속한 id가 같지 않은 경우 [수정],[삭제] 버튼 disable
+       if (editButton) {
+         if (loggedInUserId !== postAuthorId) {
+           editButton.style.display = 'none'; // 수정 버튼 disable
+           delButton.style.display = 'none'; // 삭제 버튼 disable
+         }
+       }
+
+
 
     })
     .catch(error => {
@@ -86,3 +79,16 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 });
+
+
+
+// JWT 토큰에서 사용자 ID 추출
+function getUserIdFromJwtToken() {
+  const jwtToken = localStorage.getItem('jwtToken');
+  if (!jwtToken) {
+    return null;
+  }
+  const base64Url = jwtToken.split('.')[1];
+  const base64 = base64Url.replace('-', '+').replace('_', '/');
+  return JSON.parse(window.atob(base64)).userId;
+}

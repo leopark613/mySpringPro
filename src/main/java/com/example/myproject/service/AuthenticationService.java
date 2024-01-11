@@ -2,6 +2,7 @@ package com.example.myproject.service;
 
 import com.example.myproject.entity.User;
 import com.example.myproject.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -53,14 +54,27 @@ public class AuthenticationService {
         System.out.println("로그인 성공");
         return generateToken(user);
     }
-
+    //jwt 토큰 생성
     private String generateToken(User user) {
         long currentTimeMillis = System.currentTimeMillis();
         return Jwts.builder()
-                .setSubject(user.getId())
+                //.setSubject(user.getId()) - JWT 표준에서 sub (subject) 클레임이 일반적으로 사용자를 식별하는 데 사용
+                .claim("userId", user.getId()) // 사용자 id 추출
+                .claim("auth", user.getAuth()) // 사용자 권한 추출
                 .setIssuedAt(new Date(currentTimeMillis))
                 .setExpiration(new Date(currentTimeMillis + 86400000)) // 1일 후 만료
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
+    }
+    // JWT 토큰에서 사용자 ID 추출
+    public String getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return claims.get("userId", String.class);
+    }
+
+    // JWT 토큰에서 사용자 권한 추출
+    public String getAuthFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return claims.get("auth", String.class);
     }
 }

@@ -16,9 +16,11 @@ document.addEventListener("DOMContentLoaded", function() {
   const base64Url = jwtToken.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   const payload = JSON.parse(window.atob(base64));
-  const userId = payload.sub;
+  const userId = payload.userId;
 
   createForm.addEventListener('submit', function(event) {
+    //jwt토큰 추출(auth도 함께 보내기 위함)
+    const jwtToken = localStorage.getItem('jwtToken');
     event.preventDefault();
     const formData = {
       id: userId,
@@ -30,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 헤더에 포함
       },
       body: JSON.stringify(formData)
     })

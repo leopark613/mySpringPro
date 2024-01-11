@@ -116,8 +116,10 @@ public class BoardController {
 
     //게시물 추가(글쓰기)
     @PostMapping("/create")
-    public Board createBoard(@RequestBody Board board) {
-        return boardService.createBoard(board);
+    public Board createBoard(@RequestBody Board board, HttpServletRequest request) {
+        //insert시 jwt 토큰에서 추출한 auth 함께 저장하기 위함
+        String jwtToken = request.getHeader("Authorization").substring(7); // "Bearer " 제거
+        return boardService.createBoard(board, jwtToken);
     }
     //게시물 수정
     @PostMapping("/update")
