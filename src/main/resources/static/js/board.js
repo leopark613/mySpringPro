@@ -36,6 +36,43 @@ document.addEventListener("DOMContentLoaded", function() {
     form.submit();
   });
 
+  //글쓰기 버튼 클릭시, 토큰값 검사 후 글쓰기 화면으로 이동
+  const createPostButton = document.getElementById('createPost');
+  createPostButton.addEventListener('click', function(event) {
+    const jwtToken = localStorage.getItem('jwtToken');
+    if (!jwtToken) {
+      alert("로그인을 해주세요");
+      window.location.href = '/view/login.html';
+      event.preventDefault(); // 폼 제출 막기
+    } else {
+      // 서버에 토큰 유효성 검증 요청을 보낼 수 있음
+      fetch('/board/writeBoard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('세션이 만료되었습니다. 다시 로그인 해주세요.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.isValid) {
+          window.location.href = '/view/insert.html'; // 유효한 토큰일 경우 글쓰기 페이지로 이동
+        } else {
+          throw new Error('세션이 만료되었습니다. 다시 로그인 해주세요.');
+        }
+      })
+      .catch(error => {
+        alert(error.message);
+        window.location.href = '/view/login.html'; // 로그인 페이지로 리다이렉트
+      });
+    }
+  });
+
   // 페이지를 가져오고 표시하는 함수
   function fetchAndDisplayPage(page, searchType, searchTerm) {
     let url = '/board/active';
@@ -50,16 +87,23 @@ document.addEventListener("DOMContentLoaded", function() {
       alert("로그인을 해주세요");
       return window.location.href = `/view/login.html`;
     }
-    fetch(url)
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}` // 토큰을 헤더에 포함시킵니다.
+      }
+    })
     .then(response => {
       if (!response.ok) {
         throw new Error('Server responded with ' + response.status);
       }
-
       if (response.status === 204) { // 204 No Content 응답 처리
         return []; // 빈 배열 반환
       }
-
+      if (response.status === 500) {
+        alert("세션이 만료되었습니다. 다시 로그인 해주세요.");
+        return window.location.href = '/view/login.html'; // 로그인 페이지로 리다이렉트
+      }
       return response.json();
     })
     .then(activeBoards => {

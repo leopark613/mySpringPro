@@ -1,0 +1,10 @@
+/* mouseComponent.css */
+/* 모든 버튼과 링크에 손가락 모양 적용 */
+button, a {
+    cursor: pointer !important;
+}
+
+/* 모든 입력 필드에 I-형 커서 적용 */
+input[type="text"], textarea {
+    cursor: text !important;
+}

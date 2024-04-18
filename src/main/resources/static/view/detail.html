@@ -1,3 +1,5 @@
+<!--detail.html-->
+
 <!DOCTYPE html>
 <html lang="kr">
 <head>
@@ -5,6 +7,7 @@
   <title>게시글 상세</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/detail.css">
+  <link rel="stylesheet" href="/css/mouseComponent.css">
   <link rel="icon" href="data:;base64,iVBORw0KGo=">
 </head>
 <body>
@@ -35,7 +38,10 @@
     </tr>
     <tr>
       <th scope="row">내용</th>
-      <td id="content"></td>
+      <td>
+        <img id="image" src="" alt="게시글 이미지" style="max-width: 100%; display: none;">
+        <div id="content"></div>
+      </td>
     </tr>
     </tbody>
   </table>

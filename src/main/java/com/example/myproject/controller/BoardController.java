@@ -1,18 +1,23 @@
 package com.example.myproject.controller;
 
 import com.example.myproject.entity.Board;
+import com.example.myproject.service.AuthenticationService;
 import com.example.myproject.service.BoardService;
 //import jakarta.servlet.http.HttpServletRequest;
 //import jakarta.servlet.http.HttpSession;
+import com.example.myproject.service.ImageStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -23,9 +28,18 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
+    @Autowired
+    private ImageStorageService imageStorageService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
     // 모든 게시글 조회
     @GetMapping
-    public ResponseEntity<List<Board>> getAllBoards() {
+    public ResponseEntity<List<Board>> getAllBoards(@RequestHeader(name = "Authorization") String authToken) {
+        if (!authenticationService.isTokenValid(authToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         List<Board> boards = boardService.findAllBoards();
         return ResponseEntity.ok(boards);
     }
@@ -42,14 +56,16 @@ public class BoardController {
 
     @GetMapping("/active")
     public ResponseEntity<List<Board>> getActiveBoards(
+            @RequestHeader(name = "Authorization") String authToken,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String term) {
-
-        List<Board> activeBoards = boardService.searchActiveBoards(type, term);
-
-        if (activeBoards.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            System.out.println("authToken1 : "+ authToken);
+        if (!authenticationService.isTokenValid(authToken)) {
+            System.out.println("authToken2 : "+ authToken);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        List<Board> activeBoards = boardService.searchActiveBoards(type, term);
+        System.out.println("authToken3 : "+ authToken);
         return ResponseEntity.ok(activeBoards);
     }
 
@@ -96,53 +112,91 @@ public class BoardController {
     // 게시글 상세보기 ID로 조회 - 4 조회수증가를 세션으로 처리
     // 목록에서만 클릭했을때 조회수 증가하고, 같은 동일한글 또 클릭시 증가 안함. 즉, 다른 글을 클릭해야만 조회수 증가
     @GetMapping("/seq/{seq}")
-    public ResponseEntity<Board> getBoardBySeq(@PathVariable int seq, HttpSession session) {
-        String lastViewedBoardSeq = (String) session.getAttribute("lastViewedBoardSeq");
-
-        Optional<Board> boardOptional = boardService.findBoardBySeq(seq);
-
-        if (boardOptional.isPresent()) {
-            // 목록에서 다시 게시글을 클릭했을 경우 조회수 증가
-            if (lastViewedBoardSeq == null || !lastViewedBoardSeq.equals(String.valueOf(seq))) {
-                boardService.incrementCountAndSave(boardOptional.get());
-                session.setAttribute("lastViewedBoardSeq", String.valueOf(seq)); // 세션에 현재 게시글 seq 저장
-            }
+    public ResponseEntity<Board> getBoardBySeq(
+            @PathVariable int seq,
+            HttpSession session,
+            @RequestHeader(name = "Authorization") String authToken) {
+        //토큰 검증 - 하단 authenticationService.isTokenValid 에서 공백제거가 안되므로 여기서 제거시킴
+        if (authToken.startsWith("Bearer ")) {
+            authToken = authToken.substring(7).trim();  // "Bearer "를 제거하고 공백을 제거
         }
 
-        return boardOptional
-                .map(ResponseEntity::ok)
+        if (!authenticationService.isTokenValid(authToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return boardService.findBoardBySeq(seq)
+                .map(board -> {
+                    boardService.incrementCountAndSave(board);
+                    return ResponseEntity.ok(board);
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //게시물 추가(글쓰기)
-    @PostMapping("/create")
-    public Board createBoard(@RequestBody Board board, HttpServletRequest request) {
-        //insert시 jwt 토큰에서 추출한 auth 함께 저장하기 위함
-        String jwtToken = request.getHeader("Authorization").substring(7); // "Bearer " 제거
-        return boardService.createBoard(board, jwtToken);
+    // 게시글쓰그는 화면
+    @PostMapping("/writeBoard")
+    public ResponseEntity<Map<String, Boolean>> writeBoardPage(@RequestHeader("Authorization") String authToken) {
+        boolean isValid = authenticationService.isTokenValid(authToken);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isValid", isValid);
+        return ResponseEntity.ok(response);
     }
-    //게시물 수정
+
+
+    // 게시물 추가 (글쓰기 - 저장)
+    @PostMapping("/create")
+    public ResponseEntity<Board> createBoard(
+            @RequestBody Board request,
+            @RequestHeader(name = "Authorization") String authToken,
+            HttpServletRequest httpServletRequest) throws IOException {
+
+        //토큰 검증 - 하단 authenticationService.isTokenValid 에서 공백제거가 안되므로 여기서 제거시킴
+        if (authToken.startsWith("Bearer ")) {
+            authToken = authToken.substring(7).trim();  // "Bearer "를 제거하고 공백을 제거
+        }
+        if (!authenticationService.isTokenValid(authToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String userId = authenticationService.getUserIdFromToken(authToken);  // 사용자 ID 추출
+        //String imagePath = image != null ? saveImage(image, request) : null;  // 이미지 저장 및 경로 추출
+
+        Board savedBoard = boardService.createBoard(request.getTitle(), request.getContent(), userId, null, authToken);  // 서비스 메서드로 파라미터 전달
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBoard);
+    }
+
+
+    // 수정하기 화면
+    @PostMapping("/updatePage")
+    public ResponseEntity<Map<String, Boolean>> updateDetailPage(@RequestHeader("Authorization") String authToken) {
+        boolean isValid = authenticationService.isTokenValid(authToken);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isValid", isValid);
+        return ResponseEntity.ok(response);
+    }
+
+    // 게시물 수정
     @PostMapping("/update")
-    // ResponseEntity - Spring Web에서 HTTP 요청에 대한 응답
-    public ResponseEntity<?> updateBoard(@ModelAttribute Board board, HttpServletRequest request) {
+    public ResponseEntity<?> updateBoard(
+            @RequestBody Board board,
+            @RequestHeader(name = "Authorization") String authToken,
+            HttpServletRequest request) {
+
+        if (!authenticationService.isTokenValid(authToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         try {
-            //Optional : null을 허용하지않는 목적. 객체가 null일 수도 있다는 것을 명시적으로 표현하고, 이를 안전하게 처리할 수 있는 방법 제공. 즉, NullPointerException 방지
             Optional<Board> existingBoardOpt = boardService.findBoardBySeq(board.getSeq());
             if (existingBoardOpt.isPresent()) {
                 Board existingBoard = existingBoardOpt.get();
                 existingBoard.setTitle(board.getTitle());
                 existingBoard.setContent(board.getContent());
-                existingBoard.setUpdateDate(new Timestamp(System.currentTimeMillis())); // 수정 날짜 업데이트
-                boardService.saveOrUpdateBoard(existingBoard); // 변경된 내용 저장
-                
-                //리다이렉트 로직
-                HttpHeaders headers = new HttpHeaders();
-                //저장 업데이트 이후에 다시 상세페이지(detail.html)로 이동할때 쿼리스트링으로 id,seq을 갖고 넘어가게 하기
-                headers.add("Location", "/view/detail.html?id=" + existingBoard.getId() + "&seq=" + existingBoard.getSeq());
-                    //ResponseEntity<String> : 응답 본문이 문자열이 될 것임을 나타냄
-                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+                existingBoard.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+
+                boardService.saveOrUpdateBoard(existingBoard);
+                return ResponseEntity.ok(existingBoard);
             } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -150,12 +204,32 @@ public class BoardController {
         }
     }
 
+
+    // 이미지 파일을 저장하고 경로를 반환하는 메소드
+    private String saveImage(MultipartFile file, HttpServletRequest request) throws IOException {
+        String uploadsDir = "/uploads/";
+        String realPathtoUploads = request.getServletContext().getRealPath(uploadsDir);
+        if (!new File(realPathtoUploads).exists()) {
+            new File(realPathtoUploads).mkdir();
+        }
+        String orgName = file.getOriginalFilename();
+        String filePath = realPathtoUploads + orgName;
+        File dest = new File(filePath);
+        file.transferTo(dest);
+        return request.getContextPath() + uploadsDir + orgName;
+    }
+
+
+
     //삭제(상태값 업데이트 'Y' -> 'N')
     @PostMapping("/deactivate/{seq}")
-    public RedirectView deactivateBoard(@PathVariable int seq) {
+    public RedirectView deactivateBoard(
+            @PathVariable int seq,
+            @RequestHeader(name = "Authorization") String authToken) {
+        if (!authenticationService.isTokenValid(authToken)) {
+            return new RedirectView("/login"); // Redirect to login if unauthorized
+        }
         boardService.deactivateBoard(seq);
-        //return ResponseEntity.ok().build(); // 단순한 성공 응답 반환
-        // board.html로 리디렉션
         return new RedirectView("/view/board.html");
     }
 
@@ -172,8 +246,28 @@ public class BoardController {
 
     // 게시글 ID로 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoardById(@PathVariable String id) {
+    public ResponseEntity<Void> deleteBoardById(
+            @PathVariable String id,
+            @RequestHeader(name = "Authorization") String authToken) {
+        if (!authenticationService.isTokenValid(authToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         boardService.deleteBoardById(id);
         return ResponseEntity.ok().build();
+    }
+
+    // 이미지 업로드를 처리하는 엔드포인트
+    @PostMapping("/upload")
+    public ResponseEntity<?> handleImageUpload(@RequestParam("image") MultipartFile file) {
+        try {
+            // 이미지를 저장하고 웹 접근 가능한 URL을 반환하는 로직
+            String imagePath = imageStorageService.storeImage(file);
+
+            // 여기서 imagePath는 웹에서 접근 가능한 URL이어야 합니다.
+            return ResponseEntity.ok(Map.of("path", imagePath));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("이미지 업로드 실패: " + e.getMessage());
+        }
     }
 }

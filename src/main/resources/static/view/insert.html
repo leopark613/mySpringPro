@@ -1,3 +1,5 @@
+<!--insert.html-->
+
 <!DOCTYPE html>
 <html lang="kr">
 <head>
@@ -5,12 +7,13 @@
   <title>게시글 작성</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/insert.css">
+    <link rel="stylesheet" href="/css/mouseComponent.css">
   <link rel="icon" href="data:;base64,iVBORw0KGo="><!--favicon.ico를 요청하지않게 방지(불필요한 404오류)-->
 </head>
 <body>
 <div class="container mt-4">
   <h1 class="text-center mb-4">게시글 작성</h1>
-  <form id="createPostForm" action="/board/create" method="post">
+  <form id="createPostForm" action="/board/create" method="post" enctype="multipart/form-data">
 <!--    <div class="form-group">-->
 <!--      <label for="id">작성자</label>-->
 <!--      <input type="text" class="form-control" id="id" name="id">-->
@@ -19,6 +22,10 @@
       <label for="title">제목</label>
       <input type="text" class="form-control" id="title" name="title">
     </div>
+      <label for="image">이미지 첨부</label>
+      <div class="form-group">
+          <input type="file" class="" id="image" name="image">
+      </div>
     <div class="form-group">
       <label for="content">내용</label>
       <textarea class="form-control" id="content" name="content" rows="4"></textarea>

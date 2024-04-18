@@ -12,7 +12,24 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+  logging:
+    level:
+      org.springframework.web: DEBUG
+      org.springframework.security: DEBUG
+      springfox.documentation.spring.web: DEBUG
+      springfox.bean.validators: DEBUG
+      springfox.schema.plugins: DEBUG
+  jwt:
+    # 실행 -> 구성편집 -> 환경변수를 하드코딩으로 비밀키를 박아놨음(또한 --deburg도 별개로 넣었음).
+    secret: ${JWT_SECRET}
 
+
+#  servlet:
+#    multipart:
+#      location: C:/Users/THIRAUTECH/Desktop/spirnglocal/myproject/src/main/resources/static/image
 #jwt:
 #  secret: QjW3DxN5cVbU8eK2rT1mZ7sP4fH9aQ3y
 

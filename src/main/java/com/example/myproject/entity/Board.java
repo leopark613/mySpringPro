@@ -44,6 +44,16 @@ public class Board {
     @Column(name = "update_date", nullable = false, updatable = true, insertable = false)
     private Timestamp updateDate;
 
+    @Column(name = "image_path")
+    private String imagePath; // 이미지 경로를 저장할 필드
+
+    public Board(String title, String content, String userId, String imagePath, Timestamp timestamp) {
+    }
+
+    public Board() {
+
+    }
+
     //***************************************************************************
 
     // Getters
@@ -82,6 +92,8 @@ public class Board {
 
     public int getSeq() { return seq;}
 
+    public String getImagePath() { return imagePath;}
+
     //*********************************************************************************************
 
     // Setters
@@ -111,11 +123,11 @@ public class Board {
 
     public void setUpdateDate(Timestamp updateDate) { this.updateDate = updateDate; }
 
-    // useYn 필드의 setter
     public void setUseYn(String useYn) {
         this.useYn = useYn;
     }
 
+    public void setImagePath(String imagePath) { this.imagePath = imagePath;}
 
     public void setSeq(int seq) { this.seq = seq; }
 
