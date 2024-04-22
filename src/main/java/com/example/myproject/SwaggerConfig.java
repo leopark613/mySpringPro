@@ -11,35 +11,58 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.service.*;
+import java.util.List;
 
 @Configuration
 @EnableOpenApi
 public class SwaggerConfig {
-    private static final String SECURITY_SCHEME_NAME = "authorization"; // 추가
+    private static final String SECURITY_SCHEME_NAME = "Authorization";
 
     @Bean
     public Docket apiDocket() {
-        return new Docket(DocumentationType.OAS_30) // OAS_30은 OpenAPI 3.0을 의미
+        return new Docket(DocumentationType.OAS_30)
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("com.example.myproject"))
                 .paths(PathSelectors.any())
+                .build()
+                .securitySchemes(List.of(apiKey()))
+                .securityContexts(List.of(securityContext()));
+    }
+
+    private SecurityContext securityContext() {
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                .forPaths(PathSelectors.regex("/.*"))
                 .build();
     }
 
+    private List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = authorizationScope;
+        return List.of(new SecurityReference(SECURITY_SCHEME_NAME, authorizationScopes));
+    }
+
+    private ApiKey apiKey() {
+        return new ApiKey(SECURITY_SCHEME_NAME, "Authorization", "header");
+    }
+
     @Bean
-    public OpenAPI swaggerApi() {
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .components(new Components()
-                        .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
-                                .name(SECURITY_SCHEME_NAME)
+                .components(new Components().addSecuritySchemes(SECURITY_SCHEME_NAME,
+                        new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
-                                .bearerFormat("JWT")))
-                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
+                                .bearerFormat("JWT")
+                                .in(SecurityScheme.In.HEADER)
+                                .name("Authorization")))
                 .info(new Info()
-                        .title("스프링시큐리티 + JWT 예제")
-                        .description("스프링시큐리티와 JWT를 이용한 사용자 인증 예제입니다.")
-                        .version("1.0.0"));
+                        .title("Example API")
+                        .version("v1")
+                        .description("This is a sample server for Spring Security and JWT integration."));
     }
 }
